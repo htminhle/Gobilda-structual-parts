@@ -3,122 +3,161 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>goBILDA Structural Learning Center</title>
+    <title>goBILDA Comprehensive Learning Hub</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; max-width: 1200px; margin: 0 auto; padding: 20px; background-color: #f4f4f9; }
-        h1 { color: #f26522; text-align: center; border-bottom: 3px solid #f26522; padding-bottom: 10px; }
-        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; margin-top: 30px; }
-        .part-card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); cursor: pointer; transition: transform 0.2s; border-bottom: 4px solid #f26522; }
-        .part-card:hover { transform: translateY(-5px); }
-        .part-img { width: 100%; height: 200px; object-fit: contain; background: #fff; padding: 10px; box-sizing: border-box; }
-        .part-info { padding: 15px; }
-        .part-title { font-weight: bold; font-size: 1.1em; color: #222; margin-bottom: 5px; }
-        .part-desc { font-size: 0.85em; color: #666; height: 45px; overflow: hidden; }
+        :root {
+            --gobilda-orange: #f26522;
+            --gobilda-blue: #005da4;
+            --bg-light: #f8f9fa;
+            --text-dark: #2d2d2d;
+        }
+        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg-light); color: var(--text-dark); margin: 0; padding: 0; }
+        header { background: #fff; padding: 20px; text-align: center; border-bottom: 4px solid var(--gobilda-orange); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        h1 { margin: 0; color: var(--gobilda-orange); text-transform: uppercase; letter-spacing: 1px; }
         
-        /* Modal Styles */
-        #detail-view { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 12px; box-shadow: 0 0 30px rgba(0,0,0,0.5); z-index: 100; width: 90%; max-width: 500px; text-align: center; }
-        #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 99; }
-        .modal-img { width: 250px; height: 250px; object-fit: contain; margin-bottom: 20px; }
-        .close-btn { background: #f26522; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-top: 20px; }
+        /* Navigation Tabs */
+        .tabs { display: flex; justify-content: center; background: #333; position: sticky; top: 0; z-index: 10; }
+        .tab-btn { background: none; border: none; color: white; padding: 15px 25px; cursor: pointer; font-weight: bold; transition: 0.3s; font-size: 1rem; }
+        .tab-btn:hover { background: #444; }
+        .tab-btn.active { background: var(--gobilda-orange); }
+
+        .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 25px; }
+        
+        /* Part Cards */
+        .card { background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.08); transition: 0.3s; border: 1px solid #eee; display: flex; flex-direction: column; }
+        .card:hover { transform: translateY(-8px); box-shadow: 0 12px 20px rgba(0,0,0,0.15); }
+        .card img { width: 100%; height: 200px; object-fit: contain; padding: 10px; background: #fff; }
+        .card-content { padding: 15px; flex-grow: 1; border-top: 1px solid #f0f0f0; }
+        .card-title { font-weight: bold; font-size: 1.1rem; margin-bottom: 8px; color: var(--gobilda-blue); }
+        .card-text { font-size: 0.9rem; color: #666; line-height: 1.4; }
+
+        /* Modal */
+        #modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 100; justify-content: center; align-items: center; }
+        .modal { background: white; padding: 30px; border-radius: 15px; max-width: 500px; width: 90%; position: relative; text-align: center; }
+        .close-modal { position: absolute; top: 10px; right: 15px; font-size: 24px; cursor: pointer; color: #999; }
+        .modal img { max-width: 200px; margin-bottom: 20px; }
+
+        .section-intro { text-align: center; margin-bottom: 40px; }
     </style>
 </head>
 <body>
 
-    <h1>goBILDA® Structure: Visual Parts List</h1>
-    <p style="text-align:center">Explore the essential building blocks of the goBILDA ecosystem.</p>
+<header>
+    <h1>goBILDA® Parts Explorer</h1>
+    <p>A Resource for STEM Students & Robotics Teams</p>
+</header>
 
-    <div class="grid-container" id="parts-grid"></div>
+<nav class="tabs">
+    <button class="tab-btn active" onclick="showTab('structure')">STRUCTURE</button>
+    <button class="tab-btn" onclick="showTab('motion')">MOTION</button>
+    <button class="tab-btn" onclick="showTab('electronics')">ELECTRONICS</button>
+    <button class="tab-btn" onclick="showTab('hardware')">HARDWARE</button>
+</nav>
 
-    <div id="overlay" onclick="closeDetail()"></div>
-    <div id="detail-view">
-        <img id="modal-img" class="modal-img" src="" alt="Part Image">
-        <h2 id="modal-title" style="margin-top:0; color:#f26522;"></h2>
-        <p id="modal-desc"></p>
-        <p id="modal-tips" style="font-style: italic; color: #555;"></p>
-        <button class="close-btn" onclick="closeDetail()">Back to Gallery</button>
+<div class="container">
+    <div id="section-info" class="section-intro">
+        <h2 id="tab-title">Structural Parts</h2>
+        <p id="tab-desc">The skeleton of your robot. Based on a 16mm pattern for perfect alignment.</p>
     </div>
 
-    <script>
-        const parts = [
-            { 
-                title: "U-Channel", 
-                desc: "The structural foundation of most builds.", 
-                use: "Ideal for robot chassis and robust lift mechanisms.",
-                img: "https://cdn11.bigcommerce.com/s-6u969/images/stencil/500x500/products/1239/6840/1120-0005-0168-Product-Photo-1-2__98485.1554411130.jpg" 
-            },
-            { 
-                title: "goRAIL®", 
-                desc: "T-Slot extrusion with the 16mm pattern.", 
-                use: "Best for adjustable mounting and linear slides.",
-                img: "https://cdn11.bigcommerce.com/s-6u969/images/stencil/500x500/products/1256/6797/1109-0001-0288-Product-Photo-1-1__91652.1554305886.jpg" 
-            },
-            { 
-                title: "Flat Beams", 
-                desc: "Low profile structural connectors.", 
-                use: "Used for bracing or linking components in tight spaces.",
-                img: "https://cdn11.bigcommerce.com/s-6u969/images/stencil/500x500/products/1273/6835/1101-0003-0136-Product-Photo-1-1__37775.1554410065.jpg" 
-            },
-            { 
-                title: "Grid Plates", 
-                desc: "Large mounting surfaces for complex assemblies.", 
-                use: "Perfect for mounting electronics and custom motor layouts.",
-                img: "https://cdn11.bigcommerce.com/s-6u969/images/stencil/500x500/products/1301/6920/1131-0001-0001-Product-Photo-1-1__63375.1554418652.jpg" 
-            },
-            { 
-                title: "L-Brackets", 
-                desc: "90-degree structural joiners.", 
-                use: "Connecting two pieces of channel at a right angle.",
-                img: "https://cdn11.bigcommerce.com/s-6u969/images/stencil/500x500/products/1315/6948/1102-0001-0001-Product-Photo-1-1__49567.1554421448.jpg" 
-            },
-            { 
-                title: "Standoffs", 
-                desc: "Threaded pillars to create specific gaps.", 
-                use: "Spacing apart two parallel plates for gear clearance.",
-                img: "https://cdn11.bigcommerce.com/s-6u969/images/stencil/500x500/products/2199/14358/1117-0006-0020-Product-Photo-1-1__34676.1601655184.jpg" 
-            },
-            { 
-                title: "Clamping Mounts", 
-                desc: "High-strength friction mounts for tubes/motors.", 
-                use: "Securing motors without marring the surface.",
-                img: "https://cdn11.bigcommerce.com/s-6u969/images/stencil/500x500/products/1209/16654/1002-0001-0004-Product-Photo-2-1__20822.1627503795.jpg" 
-            },
-            { 
-                title: "Pattern Spacers", 
-                desc: "Small shims to maintain the 8mm grid alignment.", 
-                use: "Ensuring smooth gear mesh between structural members.",
-                img: "https://cdn11.bigcommerce.com/s-6u969/images/stencil/500x500/products/1359/7092/1110-0001-0003-Product-Photo-1-1__38865.1554492163.jpg" 
-            }
-        ];
+    <div class="grid" id="parts-grid">
+        </div>
+</div>
 
-        const grid = document.getElementById('parts-grid');
+<div id="modal-overlay" onclick="closeModal()">
+    <div class="modal" onclick="event.stopPropagation()">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <img id="m-img" src="" alt="">
+        <h2 id="m-title" style="color: var(--gobilda-orange)"></h2>
+        <p id="m-desc"></p>
+        <p id="m-tip" style="background: #fff3e0; padding: 10px; border-radius: 5px; font-size: 0.9rem;"></p>
+    </div>
+</div>
 
-        parts.forEach(part => {
-            const card = document.createElement('div');
-            card.className = 'part-card';
-            card.innerHTML = `
-                <img src="${part.img}" class="part-img" alt="${part.title}">
-                <div class="part-info">
-                    <div class="part-title">${part.title}</div>
-                    <div class="part-desc">${part.desc}</div>
-                </div>
-            `;
-            card.onclick = () => showDetail(part);
-            grid.appendChild(card);
-        });
+<script>
+const data = {
+    structure: {
+        title: "Structural Components",
+        desc: "Framework elements including Channels, Beams, and Plates that provide the robot's shape and strength.",
+        items: [
+            { name: "1120 Series U-Channel", img: "https://cdn11.bigcommerce.com/s-6u969/images/stencil/500x500/products/1239/6840/1120-0005-0168-Product-Photo-1-2__98485.1554411130.jpg", desc: "The heavy-duty backbone of the system.", tip: "Use inside space to tuck away motors and wires." },
+            { name: "Flat Beams", img: "https://cdn11.bigcommerce.com/s-6u969/images/stencil/500x500/products/1273/6835/1101-0003-0136-Product-Photo-1-1__37775.1554410065.jpg", desc: "Slim profile connectors for light-duty links.", tip: "Great for creating four-bar linkages." },
+            { name: "Grid Plates", img: "https://cdn11.bigcommerce.com/s-6u969/images/stencil/500x500/products/1301/6920/1131-0001-0001-Product-Photo-1-1__63375.1554418652.jpg", desc: "Mounting surfaces with the standard 16mm pattern.", tip: "Ideal for creating custom gearboxes or mounting large sensors." }
+        ]
+    },
+    motion: {
+        title: "Motion Components",
+        desc: "Components that move: Motors, Gears, Pulleys, and Wheels.",
+        items: [
+            { name: "Yellow Jacket Gearmotors", img: "https://cdn11.bigcommerce.com/s-6u969/images/stencil/500x500/products/1373/14490/5203-2402-0019-Product-Photo-1-1__24896.1604071373.jpg", desc: "High-torque planetary gearmotors with built-in encoders.", tip: "Check the RPM; lower RPM means more torque for heavy lifting." },
+            { name: "Miter Gears", img: "https://cdn11.bigcommerce.com/s-6u969/images/stencil/500x500/products/1410/7243/2315-0006-0030-Product-Photo-1-1__99478.1554746654.jpg", desc: "Transfer power at a 90-degree angle.", tip: "Ensure you have a 24mm center-to-center distance for proper mesh." },
+            { name: "Mecanun Wheels", img: "https://cdn11.bigcommerce.com/s-6u969/images/stencil/500x500/products/1443/7325/3606-0001-0001-Product-Photo-1-1__89139.1554823297.jpg", desc: "Allows for omnidirectional movement (strafing).", tip: "Requires 4 independent motors to work correctly." }
+        ]
+    },
+    electronics: {
+        title: "Electronics & Control",
+        desc: "The 'brain' and 'nervous system' of your robot.",
+        items: [
+            { name: "Switchable Power Distribution", img: "https://cdn11.bigcommerce.com/s-6u969/images/stencil/500x500/products/3389/22026/3116-0001-0001-Product-Photo-1-1__98132.1706825482.jpg", desc: "Manages power from the battery to your controllers.", tip: "Always use a fuse to protect your electronics from shorts." },
+            { name: "Smart Robot Servo", img: "https://cdn11.bigcommerce.com/s-6u969/images/stencil/500x500/products/1218/14470/2000-0025-0002-Product-Photo-1-1__04107.1603991206.jpg", desc: "High-torque servos that can be programmed for rotation or position.", tip: "Use the Programmer tool to switch between Continuous and Standard modes." },
+            { name: "LiPo Battery", img: "https://cdn11.bigcommerce.com/s-6u969/images/stencil/500x500/products/2156/14115/3104-0001-0002-Product-Photo-1-1__14406.1598463943.jpg", desc: "Rechargeable high-capacity power source.", tip: "Never leave LiPo batteries charging unattended!" }
+        ]
+    },
+    hardware: {
+        title: "Fasteners & Tools",
+        desc: "The screws, nuts, and tools that hold everything together.",
+        items: [
+            { name: "M4 Socket Head Screws", img: "https://cdn11.bigcommerce.com/s-6u969/images/stencil/500x500/products/1286/6883/2800-0004-0010-Product-Photo-1-1__70553.1554415849.jpg", desc: "Standardized M4 hex screws used across the system.", tip: "Use a 3mm hex driver for these screws." },
+            { name: "Shaft Collars", img: "https://cdn11.bigcommerce.com/s-6u969/images/stencil/500x500/products/1231/6731-Product-Photo-1-1__73652.1554227092.jpg", desc: "Locks components onto an 8mm REX shaft.", tip: "The REX shape prevents slipping on the shaft." },
+            { name: "Ball Linkages", img: "https://cdn11.bigcommerce.com/s-6u969/images/stencil/500x500/products/1330/7000/2908-0004-0001-Product-Photo-1-1__54519.1554432176.jpg", desc: "Pivot joints for steering or complex arm movements.", tip: "Perfect for creating steering geometry on a chassis." }
+        ]
+    }
+};
 
-        function showDetail(part) {
-            document.getElementById('modal-img').src = part.img;
-            document.getElementById('modal-title').innerText = part.title;
-            document.getElementById('modal-desc').innerText = part.desc;
-            document.getElementById('modal-tips').innerHTML = `<strong>Engineering Tip:</strong> ${part.use}`;
-            document.getElementById('overlay').style.display = 'block';
-            document.getElementById('detail-view').style.display = 'block';
-        }
+function showTab(category) {
+    // Update Active Tab UI
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    event.currentTarget.classList.add('active');
 
-        function closeDetail() {
-            document.getElementById('overlay').style.display = 'none';
-            document.getElementById('detail-view').style.display = 'none';
-        }
-    </script>
+    // Update Header
+    document.getElementById('tab-title').innerText = data[category].title;
+    document.getElementById('tab-desc').innerText = data[category].desc;
+
+    // Populate Grid
+    const grid = document.getElementById('parts-grid');
+    grid.innerHTML = '';
+    
+    data[category].items.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+            <img src="${item.img}" alt="${item.name}">
+            <div class="card-content">
+                <div class="card-title">${item.name}</div>
+                <div class="card-text">${item.desc}</div>
+            </div>
+        `;
+        card.onclick = () => openModal(item);
+        grid.appendChild(card);
+    });
+}
+
+function openModal(item) {
+    document.getElementById('m-img').src = item.img;
+    document.getElementById('m-title').innerText = item.name;
+    document.getElementById('m-desc').innerText = item.desc;
+    document.getElementById('m-tip').innerHTML = `<strong>Pro Tip:</strong> ${item.tip}`;
+    document.getElementById('modal-overlay').style.display = 'flex';
+}
+
+function closeModal() {
+    document.getElementById('modal-overlay').style.display = 'none';
+}
+
+// Initialize with Structure
+showTab('structure');
+</script>
+
 </body>
 </html>
